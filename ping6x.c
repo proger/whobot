@@ -14,7 +14,7 @@
  *  	-c option doesn't count received packets any more (because we expect countless dupes here)
  *
  * Implied use case:
- * 	ping6 -c1 -w ff02::1%en0
+ * 	ping6x -Qwc1 ff02::1%en0
  */
 
 /*	$KAME: ping6.c,v 1.169 2003/07/25 06:01:47 itojun Exp $	*/
