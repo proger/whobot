@@ -5,6 +5,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
 
+module LeaseParse where
+
 import GHC.Generics
 
 import qualified Data.ByteString.Lazy.Char8 as LBS
