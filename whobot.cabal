@@ -14,7 +14,17 @@ maintainer:          proger@hackndev.com
 build-type:          Simple
 cabal-version:       >=1.8
 
-executable whobot
-  main-is:             whoparse.hs
+executable leaseparse
+  main-is:             LeaseParse.hs
   -- other-modules:       
   build-depends:       base ==4.5.*, text, bytestring, ghc-prim, aeson >=0.6.1.0
+
+executable pingrun
+  main-is:             Ping.hs
+  -- other-modules:       
+  build-depends:       base ==4.5.*, text, bytestring, aeson >=0.6.1.0, process
+
+executable whobot
+  main-is:             Who.hs
+  -- other-modules:       
+  build-depends:       base ==4.5.*, text, containers, ghc-prim, bytestring, aeson >=0.6.1.0, process, yaml
