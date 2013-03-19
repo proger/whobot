@@ -5,14 +5,30 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module LeaseParse where
+module LeaseParse (Lease, emptyLease, readLease, readDHCPLeases, leaseMap) where
 
 import GHC.Generics
+import GHC.IO.Handle
 
 import qualified Data.ByteString.Lazy.Char8 as LBS
 import qualified Data.Text as T
+import System.Process (runInteractiveProcess, waitForProcess)
 import Data.List (foldl')
+import qualified Data.Map as M
 import Data.Aeson
+
+data Lease = Lease { leaseHostName :: T.Text
+                   , leaseMacAddress :: T.Text
+                   , leaseAddress :: T.Text
+                   , leaseLastSeen :: T.Text
+                   , leaseStatus :: T.Text
+                   , leaseOpts :: [(T.Text, T.Text)]
+                   } deriving (Show, Eq, Generic)
+
+instance ToJSON Lease
+
+emptyLease = Lease "(unknown)" "" "" "" "" []
+
 
 strtokenize = T.split (==' ')
 
@@ -41,17 +57,6 @@ readIntSafe t = case reads $ T.unpack t :: [(Int, String)] of
 
 mapClean f x = foldl' cleanMaybe [] $ map f x
 
-data Lease = Lease { leaseHostName :: T.Text
-                   , leaseMacAddress :: T.Text
-                   , leaseAddress :: T.Text
-                   , leaseLastSeen :: T.Text
-                   , leaseStatus :: T.Text
-                   , leaseOpts :: [(T.Text, T.Text)]
-                   } deriving (Show, Eq, Generic)
-
-instance ToJSON Lease
-
-emptyLease = Lease "" "" "" "" "" []
 
 -- [("host-name","Ingvars-iPhone"),("active-mac-address","50:EA:D6:92:B5:3F"),("active-address","192.168.60.94"),("last-seen","28m45s"),
 --  ,("status","bound"),("dhcp-option","\"\""),("server","default"),("client-id","1:50:ea:d6:92:b5:3f"),("mac-address","50:EA:D6:92:B5:3F"),("address","192.168.60.94")]
@@ -67,7 +72,19 @@ readLease proplist = readLease' emptyLease proplist
             -- readLease' l (x:xs) = readLease' l {leaseOpts=x:(leaseOpts l)} xs
             readLease' l [] = l
 
+readDHCPLeases' input = let lines = T.lines $ T.pack input in
+    map readLease $ mapClean proc lines
+
+readDHCPLeases = do
+    -- we need 'interact' command in expect to work this way
+    (_in, out, _err, pid) <- runInteractiveProcess "./dhcpwho" [] Nothing Nothing
+    hSetBinaryMode out False
+    waitForProcess pid
+    outS <- hGetContents out
+    return $ readDHCPLeases' outS
+
+leaseMap leases = M.fromList $ map (\l -> (T.unpack $ leaseHostName l, (T.unpack $ leaseLastSeen l, ""))) leases
 
 main = do
     inp <- getContents
-    LBS.putStrLn $ encode $ map readLease $ (mapClean proc . T.lines . T.pack) inp
+    LBS.putStrLn $ encode $ readDHCPLeases' inp

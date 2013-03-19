@@ -1,4 +1,6 @@
 
+module Ping (readPing) where
+
 import System.Process (readProcessWithExitCode)
 
 import qualified Data.ByteString.Lazy.Char8 as LBS
@@ -7,10 +9,14 @@ import Data.Aeson (encode)
 
 strtokenize = T.split (==' ')
 hosttokenize = T.split (=='.')
-procline = (head . hosttokenize . (!!4) . strtokenize)
+procline = (T.unpack . head . hosttokenize . (!!4) . strtokenize)
 
-main = do
+readPing =  do
     (rc, out, err) <- readProcessWithExitCode "./ping6x" ["-Qwc1", "ff02::1%en0"] []
     let lines = T.lines $ T.pack out
     let hostnames = map procline lines
+    return hostnames
+
+main = do
+    hostnames <- readPing
     LBS.putStrLn $ encode hostnames
