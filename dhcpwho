@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# you can import a ssh-dsa public key as:
+# > user ssh-keys import public-key-file=id_dsa.pub user=admin
+exec ssh admin@192.168.60.1 ip dhcp-server lease print terse

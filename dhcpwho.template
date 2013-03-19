@@ -1,6 +1,0 @@
-#!/usr/bin/expect -f
-set timeout 5
-spawn ssh admin@192.168.60.1 ip dhcp-server lease print terse
-expect "admin@192.168.60.1's password:"
-send "YOUR ROUTER PASSWORD HERE\n"
-interact
