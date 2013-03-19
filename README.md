@@ -7,14 +7,14 @@ Operation:
 
 * `whobot` reads list of devices from `people.yaml` file which looks like this:
 
-    Hubot:
-    	- name: xnud.local.
-    John Doe:
+        Hubot:
+        - name: xnud.local.
+        John Doe:
         - mac: 01:04:3F:0F:34:08
           name: MacBook
           type_: dhcp
         - name: JohnDoes-iPhone
-    Jane Doe:
+        Jane Doe:
         - name: Jane-Does-iPhone
         - name: Janes-MacBook-Pro.local
 
