@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Whobot by proger</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Whobot</h1>
+        <p>who is in the office?</p>
+
+        <p class="view"><a href="https://github.com/proger/whobot">View the Project on GitHub <small>proger/whobot</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/proger/whobot/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/proger/whobot/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/proger/whobot">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Who is in the office?</h1>
+
+<p>This is an unfinished hubot plugin written in Haskell, C and Coffee-Script.</p>
+
+<p>Operation:</p>
+
+<ul>
+<li>
+<p><code>whobot</code> reads list of devices from <code>people.yaml</code> file which looks like this:</p>
+
+<pre><code>Hubot:
+- name: xnud.local.
+John Doe:
+- mac: 01:04:3F:0F:34:08
+  name: MacBook
+  type_: dhcp
+- name: JohnDoes-iPhone
+Jane Doe:
+- name: Jane-Does-iPhone
+- name: Janes-MacBook-Pro.local
+</code></pre>
+</li>
+<li><p><code>whobot</code> uses IPv6 pings and Mikrotik RouterOS DHCP lease database to see what devices are on the local network</p></li>
+</ul><h1>TODO</h1>
+
+<ul>
+<li>more configurability</li>
+<li>support for false-positives (some guys tend to keep their MacBooks in the office and powered on)</li>
+<li>turn-key builds (i was lazy)</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/proger">proger</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
