@@ -1,0 +1,19 @@
+{
+  "name":        "whobot",
+  "version":     "0.0.1",
+
+  "author":      "proger",
+
+  "keywords":    ["hubot", "plugin", "bot", "robot", "haskell"],
+  "description": "Who is in the office?",
+
+  "licenses":     [],
+
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/proger/whobot.git"
+  },
+
+  "dependencies": {
+  }
+}
