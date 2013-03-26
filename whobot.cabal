@@ -5,8 +5,7 @@ name:                whobot
 version:             0.1.0.0
 synopsis:            who is in the office?
 -- description:         
--- license:             
-license-file:        LICENSE
+license:             PublicDomain
 author:              Vladimir Kirillov
 maintainer:          proger@hackndev.com
 -- copyright:           

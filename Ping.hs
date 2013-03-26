@@ -1,22 +1,26 @@
 
 module Ping (readPing) where
 
+import System.Environment (getArgs)
 import System.Process (readProcessWithExitCode)
 
 import qualified Data.ByteString.Lazy.Char8 as LBS
-import qualified Data.Text as T
+import qualified Data.Text.Lazy as T
 import Data.Aeson (encode)
 
 strtokenize = T.split (==' ')
 hosttokenize = T.split (=='.')
-procline = (T.unpack . head . hosttokenize . (!!4) . strtokenize)
+procline = head . hosttokenize . (!!4) . strtokenize
 
-readPing =  do
-    (rc, out, err) <- readProcessWithExitCode "./ping6x" ["-Qwc1", "ff02::1%en1"] [] -- TODO: make configurable
+readPing :: String -> IO [String]
+readPing interface = do
+    (rc, out, err) <- readProcessWithExitCode "./ping6x" ["-Qwc1", "ff02::1%" ++ interface] [] -- TODO: make configurable
     let lines = T.lines $ T.pack out
-    let hostnames = map procline lines
-    return hostnames
+    return $ map (T.unpack . procline) lines
 
-main = do
-    hostnames <- readPing
-    LBS.putStrLn $ encode hostnames
+main' interface = LBS.putStrLn =<< return . encode =<< readPing interface
+main = main' =<< interface
+    where
+        interface = do
+            args <- getArgs
+            return $ if not $ null args then head args else "en1"

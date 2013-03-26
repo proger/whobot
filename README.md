@@ -26,3 +26,8 @@ TODO
 * more configurability
 * support for false-positives (some guys tend to keep their MacBooks in the office and powered on)
 * turn-key builds (i was lazy)
+
+LICENSE
+===
+
+Everything is public domain unless stated otherwise.

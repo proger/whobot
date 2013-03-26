@@ -10,12 +10,16 @@ module LeaseParse (Lease, emptyLease, readLease, readDHCPLeases, leaseMap) where
 import GHC.Generics
 import GHC.IO.Handle
 
-import qualified Data.ByteString.Lazy.Char8 as LBS
-import qualified Data.Text as T
 import System.Process (runInteractiveProcess, waitForProcess)
 import Data.List (foldl')
 import qualified Data.Map as M
-import Data.Aeson
+import Data.Maybe (mapMaybe, isJust)
+
+import qualified Data.ByteString.Lazy.Char8 as BS
+import qualified Data.Text.Lazy as T
+import qualified Data.Text.Lazy.Encoding as E
+import Data.Aeson (ToJSON, encode)
+import qualified Data.Text.Lazy.IO as TIO
 
 data Lease = Lease { leaseHostName :: T.Text
                    , leaseMacAddress :: T.Text
@@ -29,34 +33,25 @@ instance ToJSON Lease
 
 emptyLease = Lease "(unknown)" "" "" "" "" []
 
-
-strtokenize = T.split (==' ')
-
--- NN D a=b c=d e=f
-getPairs (t:"D":pairs) = case readIntSafe t of
-                            Nothing -> []
-                            Just _ -> pairs
-getPairs _ = []
-
 -- long-key=string-value
+splitKV :: T.Text -> Maybe (T.Text, T.Text)
 splitKV tokens = case T.split (=='=') tokens of
             a:b:[] -> Just (a, b)
             _ -> Nothing
 
-proc x = case getPairs $ strtokenize x of
-             [] -> Nothing
-             v -> Just $ mapClean splitKV v
-
-cleanMaybe results (Just v) = v:results
-cleanMaybe results Nothing = results
-
-readIntSafe :: T.Text -> Maybe Int
 readIntSafe t = case reads $ T.unpack t :: [(Int, String)] of
-                    [] -> Nothing
                     [(i, _)] -> Just i
+                    _ -> Nothing
 
-mapClean f x = foldl' cleanMaybe [] $ map f x
-
+type Proplist = [(T.Text, T.Text)]
+proc :: T.Text -> Proplist
+proc = proctokens . T.split (==' ')
+    where
+        proctokens :: [T.Text] -> Proplist
+        proctokens (t:"D":pairs)
+            | isJust $ readIntSafe t
+            = mapMaybe splitKV pairs
+        proctokens _ = []
 
 -- [("host-name","Ingvars-iPhone"),("active-mac-address","50:EA:D6:92:B5:3F"),("active-address","192.168.60.94"),("last-seen","28m45s"),
 --  ,("status","bound"),("dhcp-option","\"\""),("server","default"),("client-id","1:50:ea:d6:92:b5:3f"),("mac-address","50:EA:D6:92:B5:3F"),("address","192.168.60.94")]
@@ -72,19 +67,22 @@ readLease proplist = readLease' emptyLease proplist
             -- readLease' l (x:xs) = readLease' l {leaseOpts=x:(leaseOpts l)} xs
             readLease' l [] = l
 
-readDHCPLeases' input = let lines = T.lines $ T.pack input in
-    map readLease $ mapClean proc lines
+readDHCPLeases' :: [T.Text] -> [Lease]
+readDHCPLeases' lines = map readLease $ filter (/=[]) $ map proc lines
 
 readDHCPLeases = do
     -- we need 'interact' command in expect to work this way
     (_in, out, _err, pid) <- runInteractiveProcess "./dhcpwho" [] Nothing Nothing
     hSetBinaryMode out False
-    waitForProcess pid
-    outS <- hGetContents out
-    return $ readDHCPLeases' outS
+    _ <- waitForProcess pid
+    TIO.hGetContents out >>= return . T.lines >>= return . readDHCPLeases'
 
-leaseMap leases = M.fromList $ map (\l -> (T.unpack $ leaseHostName l, (T.unpack $ leaseLastSeen l, ""))) leases
+leaseMap leases = M.fromList $ map (\l -> (
+    T.unpack (case leaseHostName l of
+        "(unknown)" -> leaseMacAddress l
+        x -> x)
+    , (T.unpack $ leaseLastSeen l, ""))) leases
 
-main = do
-    inp <- getContents
-    LBS.putStrLn $ encode $ readDHCPLeases' inp
+main = BS.interact $ encode . readDHCPLeases' . T.lines . E.decodeUtf8
+
+-- tl1 = T.pack "5 D address=192.168.60.66 mac-address=3C:07:54:5B:B3:BD client-id=1:3c:7:54:5b:b3:bd server=default dhcp-option=\"\" status=bound expires-after=1d19h44m10s last-seen=1d3h25m53s active-address=192.168.60.66 active-mac-address=3C:07:54:5B:B3:BD active-client-id=1:3c:7:54:5b:b3:bd active-server=default host-name=Hells-MacBook"
