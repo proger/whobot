@@ -20,19 +20,20 @@ import qualified Data.Aeson as Aeson
 import Ping
 import LeaseParse
 
-data Node = Node { name :: String
+data Node = Node { name :: Maybe String
                  , type_ :: Maybe String
                  , mac :: Maybe String
                  } deriving (Show, Generic)
 
-cleanName = head . splitRegex (mkRegex "\\.") . name
+cleanName (Node Nothing _ (Just mac)) = mac
+cleanName (Node Nothing _ Nothing) = "(unknown)"
+cleanName (Node (Just name') _ _) = head . splitRegex (mkRegex "\\.") $ name'
 
 instance FromJSON Node where
     parseJSON (Object v) = Node <$>
-                    v .: "name" <*>
+                    v .:? "name" <*>
                     v .:? "type_" <*>
                     v .:? "mac"
-
 
 people = do
     p <- readFile "./people.yaml"

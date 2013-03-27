@@ -11,7 +11,6 @@ import GHC.Generics
 import GHC.IO.Handle
 
 import System.Process (runInteractiveProcess, waitForProcess)
-import Data.List (foldl')
 import qualified Data.Map as M
 import Data.Maybe (mapMaybe, isJust)
 
