@@ -13,7 +13,7 @@ module.exports = (robot) ->
 reply = (msg) ->
   who (error, ppls, stderr) ->
     msg.send "whobot error\n#{error.stack}\ncode: #{error.code}, sig: #{error.signal}" if error
-    msg.send(("#{n} - #{h} (#{ts})" for [n,ts,h] in JSON.parse stdout).sort().join "\n")
+    msg.send(("#{n} - #{h} (#{ts})" for [n,ts,h] in ppls).sort().join "\n")
     msg.send(stderr) if stderr
 
 Array::uniq = ->
