@@ -10,5 +10,8 @@ run: ping6x
 	./ping6x -Qwc1 ff02::1%en0
 
 whobot:
-	cabal configure
-	cabal build
+	cabal install
+
+install: all
+	install ./ping6x /usr/local/bin
+	install dist/build/whobot/whobot /usr/local/bin

@@ -22,6 +22,11 @@ Operation:
 	
 * `whobot` uses IPv6 pings and Mikrotik RouterOS DHCP lease database to see what devices are on the local network
 
+INSTALLATION
+===
+
+        make install
+
 ENVIRONMENT
 ===
 
