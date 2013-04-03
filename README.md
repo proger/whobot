@@ -1,7 +1,7 @@
 Who is in the office?
 ====
 
-This is an unfinished hubot plugin written in Haskell, C and Coffee-Script.
+This is an work-in-progress hubot plugin written in Haskell, C and Coffee-Script.
 
 Operation:
 
