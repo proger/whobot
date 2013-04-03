@@ -25,7 +25,8 @@ Operation:
 INSTALLATION
 ===
 
-        make install
+    make install
+    ln -s $(pwd)/src/scripts/whobot.coffee /path/to/hubot/scripts/
 
 ENVIRONMENT
 ===
