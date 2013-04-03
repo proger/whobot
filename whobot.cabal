@@ -25,3 +25,4 @@ executable whobot
                         , process
                         , yaml
                         , regex-compat
+                        , lens
