@@ -17,15 +17,23 @@ Operation:
         Jane Doe:
         - name: Jane-Does-iPhone
         - name: Janes-MacBook-Pro.local
-
+	The Guy Who Has a Windows Phone Device With No Host Name:
+	- mac: de:ad:be:ef:f0:0d
+	
 * `whobot` uses IPv6 pings and Mikrotik RouterOS DHCP lease database to see what devices are on the local network
 
-TODO
+ENVIRONMENT
 ===
 
-* more configurability
-* support for false-positives (some guys tend to keep their MacBooks in the office and powered on)
-* turn-key builds (i was lazy)
+* `PEOPLE_YAML` must point to `people.yaml` using a resolvable path (`./people.yaml` is used by default)
+* `PING_INTERFACE` must point to the IPv6-capable network interface within a local network (`en1` is used by default)
+* `whobot` and `ping6x` must be in `$PATH`
+
+OPERATION RECOMMENDATIONS
+===
+
+* DHCP server lease time should be as little as possible to avoid bad results.
+* Better identify using mobile phones rather than laptops.
 
 LICENSE
 ===

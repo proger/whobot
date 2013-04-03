@@ -14,7 +14,7 @@ procline = head . hosttokenize . (!!4) . T.words
 
 readPing :: String -> IO [String]
 readPing interface = do
-    (rc, out, err) <- readProcessWithExitCode "./ping6x" ["-Qwc1", "ff02::1%" ++ interface] "" -- TODO: make configurable
+    (rc, out, err) <- readProcessWithExitCode "ping6x" ["-Qwc1", "ff02::1%" ++ interface] ""
     return $ map (T.unpack . procline) $ T.lines out
 
 {-

@@ -24,3 +24,4 @@ executable whobot
                         , yaml
                         , regex-compat
                         , lens
+                        , unix

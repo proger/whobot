@@ -1,5 +1,3 @@
-# TODO: dynamic paths
-
 module.exports = (robot) ->
   robot.hear /^перекличка!$/, (msg) ->
     reply msg
@@ -25,8 +23,8 @@ Array::any = ->
 pick = (msg) ->
   who (error, ppls, stderr) ->
     msg.send "whobot error\n#{error.stack}\ncode: #{error.code}, sig: #{error.signal}" if error
-    ppl = (n for [n, _, __] in ppls).sort().uniq().any()
-    msg.send "#{ppl} is lucky"
+    lucky = (n for [n, _, __] in ppls).sort().uniq().any()
+    msg.send "#{lucky} is lucky"
     msg.send(stderr) if stderr
 
 gettimeofday = ->
@@ -37,9 +35,9 @@ who = (cb) ->
 
   start = gettimeofday()
   
-  wb = child.exec '/tank/proger/whobot/whobot', cwd: "/tank/proger/whobot", (error, stdout, stderr) ->
+  wb = child.exec 'whobot', {}, (error, stdout, stderr) ->
     cb error, JSON.parse stdout, stderr
 
   wb.on 'close', (code) ->
     end = gettimeofday()
-    console.log "whobot exited with #{code} after #{end - start}"
+    console.log "whobot finished with #{code} in #{end - start} s"

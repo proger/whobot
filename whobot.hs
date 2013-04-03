@@ -4,6 +4,7 @@
 import GHC.Generics
 
 import System.Environment (getArgs)
+import System.Posix.Env (getEnvDefault)
 
 import Control.Applicative
 import qualified Data.ByteString.Lazy.Char8 as LBS
@@ -18,11 +19,16 @@ import qualified Data.Aeson as Aeson
 import Ping
 import LeaseParse
 
-data Node = Node { name :: Maybe String
+type UserName = String
+type NodeName = String
+type TimeStamp = String
+
+data Node = Node { name :: Maybe NodeName
                  , type_ :: Maybe String
                  , mac :: Maybe String
                  } deriving (Show, Generic)
 
+cleanName :: Node -> NodeName
 cleanName (Node Nothing _ (Just mac)) = mac
 cleanName (Node Nothing _ Nothing) = "(unknown)"
 cleanName (Node (Just name') _ _) = head . splitRegex (mkRegex "\\.") $ name'
@@ -33,15 +39,14 @@ instance FromJSON Node where
                     v .:? "type_" <*>
                     v .:? "mac"
 
-people = do
-    p <- readFile "./people.yaml"
-    return $ BS.pack p
+peoplemap :: IO (Maybe (Map.Map UserName [Node]))
+peoplemap = people >>= return . decode
 
+peopleReverse :: IO [(NodeName, (TimeStamp, UserName))]
 peopleReverse = do
-    p <- people
-    let nodemap = (decode p :: Maybe (Map.Map String [Node]))
-        Just nodemapl = fmap Map.toList nodemap in
-        return [(cleanName node, ("", name')) | (name', nodelist) <- nodemapl, node <- nodelist]
+    p <- peoplemap
+    let Just nodemapl = fmap Map.toList p
+    return [(cleanName node, ("", name')) | (name', nodelist) <- nodemapl, node <- nodelist]
 
 main' interface = do
     availNow <- readPing interface
@@ -56,8 +61,8 @@ main' interface = do
         in
         LBS.putStrLn $ Aeson.encode list
 
+
+people = getEnvDefault "PEOPLE_YAML" "./people.yaml" >>= BS.readFile 
+interface = getEnvDefault "PING_INTERFACE" "en1"
+
 main = main' =<< interface
-    where
-        interface = do
-            args <- getArgs
-            return $ if not $ null args then head args else "en1"
