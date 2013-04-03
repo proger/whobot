@@ -45,3 +45,9 @@ LICENSE
 ===
 
 Everything is public domain unless stated otherwise.
+
+NOTES
+===
+
+Used only with GHC 7.4.2 and haskell-platform 2012.4.0.0 that comes in homebrew at the time of writing.
+I still suck at managing cabal dependencies properly so pull requests are welcome.
