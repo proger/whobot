@@ -1,8 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
 
-module Main where
-
 import GHC.Generics
 
 import System.Environment (getArgs)
